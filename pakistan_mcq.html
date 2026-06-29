@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pakistan Studies – 200 MCQs</title>
+<style>
+  :root {
+    --green: #1a7a4a;
+    --green-light: #d4edda;
+    --red: #b22222;
+    --red-light: #f8d7da;
+    --gold: #c8a84b;
+    --dark: #1a1a2e;
+    --card: #ffffff;
+    --bg: #f0f4f8;
+    --border: #dee2e6;
+    --text: #212529;
+    --muted: #6c757d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, #0f3460 0%, #16213e 50%, #1a1a2e 100%);
+    color: white;
+    padding: 32px 24px;
+    text-align: center;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .header h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: 0.5px; }
+  .header p { color: #a0b4cc; font-size: 0.95rem; margin-top: 4px; }
+  .progress-bar-wrap { background: rgba(255,255,255,0.15); border-radius: 20px; height: 8px; margin: 14px auto 0; max-width: 500px; }
+  .progress-bar { background: linear-gradient(90deg, var(--gold), #f5c518); height: 8px; border-radius: 20px; transition: width 0.4s ease; width: 0%; }
+  .progress-label { font-size: 0.8rem; color: #a0b4cc; margin-top: 6px; }
+
+  /* TIMER */
+  .timer-bar {
+    background: #16213e;
+    padding: 8px 24px;
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    font-size: 0.9rem;
+    color: #a0b4cc;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .timer-bar span strong { color: #f5c518; }
+
+  /* MAIN */
+  main { max-width: 900px; margin: 0 auto; padding: 24px 16px 100px; }
+
+  /* SECTION HEADERS */
+  .section-title {
+    background: linear-gradient(135deg, #0f3460, #1a7a4a);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 32px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 16px;
+    transition: box-shadow 0.2s;
+    position: relative;
+  }
+  .q-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .q-num {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+  .q-text { font-size: 1rem; font-weight: 600; color: var(--dark); margin-bottom: 14px; }
+
+  /* OPTIONS */
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  @media (max-width: 600px) { .options { grid-template-columns: 1fr; } }
+
+  .opt-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-size: 0.93rem;
+    user-select: none;
+  }
+  .opt-label:hover { border-color: #0f3460; background: #f0f4ff; }
+  .opt-label input[type="radio"] { display: none; }
+  .opt-dot {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid #adb5bd;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    font-size: 10px; color: white; font-weight: 700;
+  }
+  .opt-label input:checked + .opt-dot {
+    background: #0f3460; border-color: #0f3460;
+  }
+  .opt-label input:checked + .opt-dot::after { content: "✓"; }
+
+  /* RESULT STATES */
+  .correct-opt { background: var(--green-light) !important; border-color: var(--green) !important; }
+  .wrong-opt { background: var(--red-light) !important; border-color: var(--red) !important; }
+  .correct-opt .opt-dot { background: var(--green); border-color: var(--green); }
+  .wrong-opt .opt-dot { background: var(--red); border-color: var(--red); }
+  .q-card.answered-wrong { border-left: 4px solid var(--red); }
+  .q-card.answered-correct { border-left: 4px solid var(--green); }
+  .answer-hint {
+    font-size: 0.82rem;
+    color: var(--green);
+    margin-top: 10px;
+    font-weight: 600;
+    display: none;
+  }
+  .answer-hint.show { display: block; }
+
+  /* SUBMIT AREA */
+  .submit-wrap {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: white;
+    padding: 14px 20px;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    z-index: 200;
+  }
+  #submitBtn {
+    background: linear-gradient(135deg, #0f3460, #1a7a4a);
+    color: white;
+    border: none;
+    padding: 14px 60px;
+    border-radius: 30px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    letter-spacing: 0.5px;
+  }
+  #submitBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,52,96,0.4); }
+  #submitBtn:active { transform: none; }
+  .unanswered-warn { color: var(--red); font-size: 0.85rem; display: none; }
+
+  /* RESULTS PANEL */
+  #resultPanel {
+    display: none;
+    background: white;
+    border-radius: 16px;
+    padding: 36px 28px;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    margin-bottom: 30px;
+  }
+  .result-emoji { font-size: 4rem; }
+  .result-title { font-size: 1.6rem; font-weight: 800; margin: 10px 0 4px; }
+  .result-pass { color: var(--green); }
+  .result-fail { color: var(--red); }
+  .result-stats {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+  .stat-box {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 14px 24px;
+    min-width: 130px;
+  }
+  .stat-box .val { font-size: 2rem; font-weight: 800; }
+  .stat-box .lbl { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-pass .val { color: var(--green); }
+  .stat-wrong .val { color: var(--red); }
+  .stat-pct .val { color: #0f3460; }
+  .pass-bar-wrap { background: #e9ecef; border-radius: 20px; height: 14px; max-width: 400px; margin: 0 auto 8px; }
+  .pass-bar { height: 14px; border-radius: 20px; transition: width 1s ease; width: 0%; }
+  .pass-bar.pass-color { background: linear-gradient(90deg, var(--green), #28a745); }
+  .pass-bar.fail-color { background: linear-gradient(90deg, var(--red), #ff6b6b); }
+  .pass-threshold { font-size: 0.85rem; color: var(--muted); margin-bottom: 16px; }
+  #restartBtn {
+    background: #0f3460; color: white; border: none;
+    padding: 12px 40px; border-radius: 25px; font-size: 0.95rem;
+    font-weight: 600; cursor: pointer; margin-top: 10px;
+    transition: background 0.2s;
+  }
+  #restartBtn:hover { background: #1a7a4a; }
+
+  /* SCROLL TOP */
+  #scrollTop {
+    position: fixed; bottom: 90px; right: 20px;
+    background: #0f3460; color: white;
+    border: none; width: 42px; height: 42px;
+    border-radius: 50%; font-size: 1.2rem;
+    cursor: pointer; display: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    z-index: 300;
+  }
+  #scrollTop.visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🇵🇰 Pakistan Studies — 200 MCQs</h1>
+  <p>Lectures 9–14 · Geostrategic Importance, Economy, Challenges, Society</p>
+  <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 200 answered</div>
+</div>
+<div class="timer-bar">
+  <span>⏱ Time: <strong id="timerDisplay">00:00</strong></span>
+  <span>📋 Questions: <strong>200</strong></span>
+  <span>✅ Pass Mark: <strong>50%</strong></span>
+</div>
+
+<main id="quizMain">
+  <div id="resultPanel">
+    <div class="result-emoji" id="resultEmoji"></div>
+    <div class="result-title" id="resultTitle"></div>
+    <div class="result-stats">
+      <div class="stat-box stat-pass"><div class="val" id="statCorrect">0</div><div class="lbl">Correct</div></div>
+      <div class="stat-box stat-wrong"><div class="val" id="statWrong">0</div><div class="lbl">Wrong</div></div>
+      <div class="stat-box"><div class="val" id="statSkipped">0</div><div class="lbl">Skipped</div></div>
+      <div class="stat-box stat-pct"><div class="val" id="statPct">0%</div><div class="lbl">Score</div></div>
+    </div>
+    <div class="pass-bar-wrap"><div class="pass-bar" id="passBar"></div></div>
+    <div class="pass-threshold">Pass mark: 50% (100/200 correct)</div>
+    <button id="restartBtn" onclick="restart()">🔄 Restart Quiz</button>
+  </div>
+  <div id="questionsContainer"></div>
+</main>
+
+<div class="submit-wrap">
+  <div class="unanswered-warn" id="warnMsg">⚠️ You have unanswered questions. Submit anyway?</div>
+  <button id="submitBtn" onclick="handleSubmit()">Submit Answers</button>
+</div>
+<button id="scrollTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+const PASS_PERCENT = 50;
+
+const ALL_QUESTIONS = [
+  // ── SECTION 1: Geography & Administrative Structure ──
+  {s:"📍 Geography & Administrative Structure",
+   q:"How many proper provinces is Pakistan divided into from an administrative point of view?",
+   o:["Three","Four","Five","Six"],a:1},
+  {q:"What is the total land area of Pakistan?",
+   o:["696,095 km²","796,095 km²","896,095 km²","596,095 km²"],a:1},
+  {q:"Which two areas of Pakistan are separately administered (not proper provinces)?",
+   o:["Azad Kashmir & FATA","Gilgit-Baltistan & Azad Kashmir","FATA & FATA","Gilgit-Baltistan & Punjab"],a:1},
+  {q:"Where are Gilgit-Baltistan and Azad Kashmir located in Pakistan?",
+   o:["South","East","North","West"],a:2},
+  {q:"How many major geographical regions does Pakistan's landscape divide into?",
+   o:["Four","Five","Six","Seven"],a:2},
+  {q:"Which of the following is NOT one of Pakistan's six major geographical regions?",
+   o:["North High Mountainous Region","Balochistan Plateau","Ganges Plains","Potohar Uplands"],a:2},
+  {q:"The Western Low Mountainous Region is one of Pakistan's major geographical regions. Which plains are also included?",
+   o:["Indus & Jhelum Plains","Punjab and Sindh Plains","Kabul and Swat Plains","Ravi and Chenab Plains"],a:1},
+  {q:"Which province of Pakistan is the largest by land area?",
+   o:["Punjab","Sindh","Khyber Pakhtunkhwa","Balochistan"],a:3},
+  {q:"Khyber Pakhtunkhwa was formerly known as:",
+   o:["North-West Frontier Province","North Pakistan Province","Western Frontier Zone","Federally Administered Province"],a:0},
+
+  // ── SECTION 2: National Security ──
+  {s:"🛡️ National Security",
+   q:"According to Charles W. Kegley, security means freedom from:",
+   o:["Poverty, disease and hunger","Fear, risk and danger","Foreign intervention and occupation","War, conflict and aggression"],a:1},
+  {q:"National Security is primarily described as the condition of freedom from:",
+   o:["Economic inequality","Internal and external physical threat","Cultural erosion","Environmental hazards"],a:1},
+  {q:"National security concerns itself with defending territorial integrity AND also:",
+   o:["Sports achievement","Political and economic stability plus social integration","Tourism promotion","Agricultural growth"],a:1},
+  {q:"Pakistan is described as the 'Fulcrum of Asia' because it sits at the junction of:",
+   o:["Europe, Asia and Africa","South Asia, Central Asia and Southeast Asia","East Asia, West Asia and South Asia","The Middle East, South Asia and Europe"],a:1},
+  {q:"Since independence in 1947, Pakistan's foreign policy has reflected permanent feelings of insecurity due to its:",
+   o:["Weak military","Large population","Geostrategic location","Economic poverty"],a:2},
+  {q:"The Kashmir dispute caused wars in which years?",
+   o:["1947, 1960 and 1971","1948, 1965 and Kargil Crisis 1999","1950, 1965 and 1971","1948, 1971 and 1999"],a:1},
+  {q:"India revoked which Article of its constitution that granted special status to Jammu & Kashmir?",
+   o:["Article 35A","Article 370","Article 300","Article 371"],a:1},
+  {q:"Pakistan's internal disorder is partly attributed to Indian intervention in:",
+   o:["Punjab","Balochistan & other parts","KPK","Sindh"],a:1},
+  {q:"Pakistan-Afghanistan relations have been smooth only during:",
+   o:["The Soviet-Afghan War","A short period of Taliban rule","The Karzai administration","The post-9/11 period"],a:1},
+  {q:"After 9/11, Pakistan was compelled to change its pro-Taliban policy in favor of:",
+   o:["Russia","China","The United States","Iran"],a:2},
+  {q:"For Pakistan, Iran provides 'natural depth and support' in the eventuality of hostilities on:",
+   o:["The western border with Afghanistan","The eastern borders","The northern borders","The southern coast"],a:1},
+  {q:"Sectarian conflict is a main issue that could cloud Pakistan's relations with:",
+   o:["India","China","Iran","Saudi Arabia"],a:2},
+  {q:"Internal security threats in Pakistan are caused partly by horizontal and vertical cleavages dividing people on the basis of:",
+   o:["Religion, caste, creed, status and language","Only religion and caste","Only language and status","Economic class alone"],a:0},
+  {q:"In the context of Pakistan's internal security, globalization has made Pakistan more vulnerable through:",
+   o:["Economic competition","Disseminating disinformation and manipulated stories via media","Military alliances","Technological dependence"],a:1},
+
+  // ── SECTION 3: CPEC ──
+  {s:"🛤️ CPEC – China-Pakistan Economic Corridor",
+   q:"CPEC stands for:",
+   o:["China-Pakistan Economic Corporation","China-Pakistan Economic Corridor","Central-Pakistan Export Channel","China-Pakistan Energy Consortium"],a:1},
+  {q:"What is the primary aim of CPEC?",
+   o:["To improve Pakistan's education system","To improve infrastructure in Pakistan and provide China an open passage through Gwadar port","To establish a military alliance between China and Pakistan","To create a free trade zone in South Asia"],a:1},
+  {q:"CPEC was officially launched by Chinese President Xi Jinping during his visit to Pakistan in:",
+   o:["May 2013","April 2015","June 2016","January 2014"],a:1},
+  {q:"The investment announced by Xi Jinping for CPEC was:",
+   o:["$35.6 billion","$45.6 billion","$55.6 billion","$25.6 billion"],a:1},
+  {q:"The idea of CPEC was originally given by Chinese Premier Li Keqiang in:",
+   o:["April 2015","May 2013","June 2014","March 2012"],a:1},
+  {q:"CPEC connects southern Pakistan's Gwadar port to which Chinese region?",
+   o:["Beijing","Shanghai","Kashgar (Xinjiang)","Chengdu"],a:2},
+  {q:"The total length of road connectivity under CPEC is approximately:",
+   o:["1700 km","2700 km","3700 km","4700 km"],a:1},
+  {q:"CPEC involves connectivity through all EXCEPT:",
+   o:["Road and Railway","Optical fiber","Oil and Gas Pipeline","Air corridors"],a:3},
+  {q:"CPEC is described as bridging the Silk Road Economic Belt and the:",
+   o:["Digital Silk Road","Maritime Silk Road","Polar Silk Road","Space Silk Road"],a:1},
+  {q:"The proposed CPEC trade route will reduce the distance between Kashgar and the Persian Gulf from approximately 13,000 km to:",
+   o:["5,000 km","2,700 km","8,000 km","4,000 km"],a:1},
+  {q:"CPEC is expected to reduce shipping time from approximately 45 days to:",
+   o:["5 days","10 days","15 days","20 days"],a:1},
+  {q:"Kashgar (China) is approximately how far from Beijing?",
+   o:["2,376 km","3,376 km","4,376 km","5,376 km"],a:2},
+  {q:"CPEC is described as the biggest project in the history of which bilateral relationship?",
+   o:["Pakistan-USA","China-Pakistan","Pakistan-Saudi Arabia","Pakistan-Iran"],a:1},
+
+  // ── SECTION 4: Economy of Pakistan ──
+  {s:"💰 Economy of Pakistan",
+   q:"In terms of economic structure, Pakistan resembles the middle-income countries of:",
+   o:["Europe and North America","East and Southeast Asia","Latin America and Africa","Middle East and Central Asia"],a:1},
+  {q:"Despite real economic growth, Pakistan's output per capita has risen only slowly because of:",
+   o:["Low foreign investment","Relentless increase in population","Corrupt governance","Poor agriculture"],a:1},
+  {q:"Industry is defined as that sector of the economy related with:",
+   o:["Agriculture and farming","Manufacturing and production of different products","Services and banking","Trade and exports"],a:1},
+  {q:"In economics, industries are generally classified as primary, secondary, tertiary, and:",
+   o:["Quintenary","Quaternary","Binary","Senary"],a:1},
+  {q:"Industrial systems are made up of:",
+   o:["Input, finance and output","Input, processes and output","Labor, capital and output","Resources, production and sales"],a:1},
+  {q:"The primary industry sector includes:",
+   o:["Manufacturing and construction","Agriculture, forestry, fishing, mining and extraction","Banking and services","Technology and communications"],a:1},
+  {q:"Secondary industry is also called:",
+   o:["Service industry","Knowledge industry","Manufacturing industry","Agricultural industry"],a:2},
+  {q:"Large-scale industry requires heavy capital investment and serves:",
+   o:["Only local markets","A large and diverse market","Only government clients","Export markets only"],a:1},
+  {q:"Which of the following is an example of large-scale industry?",
+   o:["Gemstone cutting","Craft work","Petroleum refining","Textile work"],a:2},
+  {q:"Light or small-scale industry may be characterized by:",
+   o:["High capital investment and standardized products","Nondurability of manufactured products and smaller capital investment","Only government ownership","Always low-skilled labor"],a:1},
+  {q:"The tertiary (service) industry includes all EXCEPT:",
+   o:["Banking and insurance","Transportation","Petroleum refining","Hotels and tourism"],a:2},
+  {q:"Quaternary industry is concerned with:",
+   o:["Agriculture and raw materials","Manufacturing of goods","Information-based or knowledge-oriented products and services","Retail and trade"],a:2},
+  {q:"Pakistan's agriculture sector contributes approximately what percentage of GDP?",
+   o:["10-12%","15-18%","23-24%","30-35%"],a:2},
+  {q:"What percentage of Pakistan's total labor force does the agriculture sector employ?",
+   o:["20%","29%","39%","49%"],a:2},
+  {q:"Which sub-sector makes up 62% of agricultural value-added in Pakistan?",
+   o:["Major Crops","Livestock","Fisheries","Forestry"],a:1},
+  {q:"Pakistan's five primary cash and food crops include all EXCEPT:",
+   o:["Wheat","Rice","Cotton","Tobacco"],a:3},
+  {q:"Cotton is described as the lifeline of Pakistan's:",
+   o:["Sugar industry","Textile industry","Chemical industry","Defence industry"],a:1},
+  {q:"Pakistan's major imports consist of machinery, chemicals, crude oil, and:",
+   o:["Textiles and garments","Motor vehicles and food/edible oils","Gold and silver","Electronics and software"],a:1},
+  {q:"Pakistan's most important trading partners include all EXCEPT:",
+   o:["United States","UAE","Japan","China"],a:2},
+  {q:"Pakistan has had a chronic annual trade deficit, meaning it has:",
+   o:["More exports than imports","More imports than exports","Balanced trade","No trade at all"],a:1},
+
+  // ── SECTION 5: Climate Change & Water ──
+  {s:"🌊 Climate Change & Water Scarcity",
+   q:"Despite contributing less than 1% of global greenhouse gas emissions, Pakistan is ranked among the most:",
+   o:["Climate-stable nations","Climate-vulnerable nations","Industrialized nations","Carbon-polluting nations"],a:1},
+  {q:"The World Bank projects that climate impacts could shrink Pakistan's GDP by how much by 2050?",
+   o:["5-8%","10-12%","18-20%","25-30%"],a:2},
+  {q:"Studies show a 1°C increase in temperature drops domestic wheat yields by:",
+   o:["1-2%","3-5%","6-9%","10-15%"],a:2},
+  {q:"Climate-driven internal migration in Pakistan flows predominantly out of Sindh and Balochistan into:",
+   o:["Rural areas","Major industrial cities","Foreign countries","Northern highlands"],a:1},
+  {q:"Pakistan's annual per capita water availability has dropped from over 5,260 cubic meters in 1951 to approximately:",
+   o:["2,500 cubic meters","1,500 cubic meters","899 cubic meters","500 cubic meters"],a:2},
+  {q:"The internationally recognized water-scarcity threshold is:",
+   o:["500 cubic meters per capita","1,000 cubic meters per capita","2,000 cubic meters per capita","3,000 cubic meters per capita"],a:1},
+  {q:"Pakistan is ranked how in the world in terms of acute water shortages (by PCRWR and IMF)?",
+   o:["1st","2nd","3rd","5th"],a:2},
+  {q:"Pakistan has set a target to generate what percentage of energy via renewable sources by 2030?",
+   o:["30%","45%","60%","75%"],a:2},
+
+  // ── SECTION 6: Pak-India Relations ──
+  {s:"🤝 Pakistan–India Relations",
+   q:"The 1999 Lahore Declaration was the first major agreement between India and Pakistan since:",
+   o:["The 1947 Independence Accord","The 1965 Tashkent Agreement","The 1972 Simla Accord","The 1988 Islamabad Declaration"],a:2},
+  {q:"In 1998, India detonated nuclear devices at Pokhran. Pakistan responded by detonating how many nuclear devices?",
+   o:["Three","Five","Six","Eight"],a:2},
+  {q:"Pakistan detonated its nuclear devices in which location?",
+   o:["Rawalpindi","Chaghi Hills","Sibi","Quetta"],a:1},
+  {q:"The Agra Conference between Pakistan's President and India's Prime Minister took place in:",
+   o:["1999","2001","2003","2005"],a:1},
+  {q:"The Indian Parliament was attacked by armed terrorists on:",
+   o:["September 11, 2001","October 1, 2001","December 13, 2001","November 26, 2001"],a:2},
+  {q:"The Mumbai attacks of November 2008 resulted in more than how many deaths?",
+   o:["50","100","160","200"],a:2},
+  {q:"Ajmal Kasab claimed the Mumbai attackers were members of:",
+   o:["Jaish-e-Mohammad","Al-Qaeda","Lashkar-e-Taiba","Hizbul Mujahideen"],a:2},
+  {q:"India revoked Article 370 removing special status of Jammu & Kashmir in:",
+   o:["August 2019","August 2020","August 2021","August 2022"],a:0},
+  {q:"The 2003 ceasefire agreement along the Line of Control was proposed by President Musharraf at:",
+   o:["SAARC Summit","UN General Assembly","OIC Meeting","SCO Summit"],a:1},
+  {q:"The Composite Dialogue Process between India and Pakistan began in:",
+   o:["2002","2004","2006","2008"],a:1},
+  {q:"The Samjhauta Express between India and Pakistan was bombed in:",
+   o:["2005","2007","2009","2011"],a:1},
+  {q:"Ajmal Kasab was executed by India in:",
+   o:["2010","2011","2012","2013"],a:2},
+  {q:"Violence along the LOC peaked in 2020 with more than how many cross-border firing incidents?",
+   o:["1000","2000","4000","6000"],a:2},
+  {q:"India conducted 'surgical strikes' on Pakistan-controlled territory across the LoC in:",
+   o:["August 2016","September 2016","November 2016","January 2017"],a:1},
+  {q:"The Uri attack of September 2016 killed how many Indian soldiers?",
+   o:["8","12","18","24"],a:2},
+
+  // ── SECTION 7: Pak-Iran Relations ──
+  {s:"🕌 Pakistan–Iran Relations",
+   q:"Iran was the first country to officially recognize Pakistan following its independence. This is referred to as:",
+   o:["Historical friendship","First to Recognize","Islamic solidarity","Strategic partnership"],a:1},
+  {q:"Both Pakistan and Iran were members of which Western-backed alliance?",
+   o:["NATO","SEATO","Baghdad Pact (later CENTO)","ANZUS"],a:2},
+  {q:"Iran provided Pakistan with military and economic aid during which wars with India?",
+   o:["1948 and 1965","1965 and 1971","1971 and 1999","1948 and 1971"],a:1},
+  {q:"Pakistan's relations with Iran cooled after:",
+   o:["The 1965 war","The 1979 Iranian Revolution","The 2001 US invasion of Afghanistan","The Soviet-Afghan War"],a:1},
+  {q:"During the 1990s Afghan civil war, Pakistan backed the Taliban while Iran supported:",
+   o:["The Mujahideen","The Northern Alliance","The Afghan National Army","The Soviet-backed government"],a:1},
+  {q:"The proposed Iran-Pakistan gas pipeline is known as the:",
+   o:["IP Pipeline","TAPI Pipeline","IPI Pipeline","Peace Pipeline"],a:0},
+  {q:"The Mand-Pishin Border Sustenance Marketplace was launched to:",
+   o:["Export Iranian oil","Improve livelihoods along the shared border","Build a military base","Establish a free trade zone"],a:1},
+
+  // ── SECTION 8: Pak-Afghan Relations ──
+  {s:"🏔️ Pakistan–Afghanistan Relations",
+   q:"In 1947, Afghanistan was the ONLY country to vote against:",
+   o:["Pakistan's partition from India","Pakistan's admission to the United Nations","Pakistan joining the OIC","Pakistan's nuclear program"],a:1},
+  {q:"The 'Pashtunistan' issue refers to Afghanistan's refusal to recognize:",
+   o:["Pakistan as an independent state","The Durand Line as the official international boundary","Pakistan's nuclear program","The rights of Afghan refugees"],a:1},
+  {q:"Following the 1979 Soviet invasion, Pakistan became a frontline state that hosted Afghan refugees and funneled arms to:",
+   o:["The Taliban","The Soviet forces","The Afghan Mujahideen","The Northern Alliance"],a:2},
+  {q:"Pakistan's intelligence agencies officially recognized the Taliban government in:",
+   o:["1994","1996","1998","2000"],a:1},
+  {q:"Pakistan began fencing the controversial Durand Line in:",
+   o:["2010","2013","2017","2020"],a:2},
+  {q:"The TTP stands for:",
+   o:["Taliban Tribal Pakistan","Tehrik-e-Taliban Pakistan","Trans-border Tribal Protocol","Terrorist Threat Protocol"],a:1},
+  {q:"Taliban's return to power in August 2021 initially raised hopes for a secure western border but instead led to:",
+   o:["Strong economic ties","Significantly deteriorated relations due to TTP","A formal peace treaty","New trade agreements"],a:1},
+
+  // ── SECTION 9: Pak-Muslim World Relations ──
+  {s:"🌍 Pakistan & the Muslim World",
+   q:"Pakistan was a founding member of the Organization of Islamic Cooperation in:",
+   o:["1965","1969","1974","1979"],a:1},
+  {q:"The 1974 OIC Summit was hosted in:",
+   o:["Karachi","Islamabad","Lahore","Peshawar"],a:2},
+  {q:"During the Bhutto era, Pakistan deepened ties particularly with:",
+   o:["Iran and Turkey","Oil-rich Gulf states especially Saudi Arabia","Egypt and Syria","Malaysia and Indonesia"],a:1},
+  {q:"Pakistan has steadfastly refused to recognize:",
+   o:["Iran","India","Israel","Russia"],a:2},
+  {q:"The Pakistan-China bilateral relationship has been the cornerstone of Pakistan's foreign policy. It is described as the:",
+   o:["Iron Brotherhood","Golden Partnership","Steel Alliance","Diamond Friendship"],a:0},
+  {q:"During the Cold War, Pakistan joined American-sponsored alliances including:",
+   o:["NATO and SEATO","CENTO and SEATO","NATO and CENTO","WARSAW and CENTO"],a:1},
+  {q:"The Karakoram Highway was constructed through collaboration between Pakistan and:",
+   o:["USA","China","Iran","Saudi Arabia"],a:1},
+
+  // ── SECTION 10: Challenges – Education ──
+  {s:"📚 Challenges: Education in Pakistan",
+   q:"Pakistan's literacy definition includes a person aged 10+ who can:",
+   o:["Write a paragraph and do basic math","Read a simple letter or newspaper in any language with understanding","Operate a computer","Complete primary schooling"],a:1},
+  {q:"Pakistan's national overall literacy rate is approximately:",
+   o:["45%","52%","60%","68%"],a:2},
+  {q:"The female literacy rate in Pakistan is approximately:",
+   o:["42%","52%","60%","68%"],a:1},
+  {q:"Which province of Pakistan has the highest literacy rate?",
+   o:["Sindh","Khyber Pakhtunkhwa","Punjab","Balochistan"],a:2},
+  {q:"Which province has the lowest literacy rate?",
+   o:["Sindh","KPK","Punjab","Balochistan"],a:3},
+  {q:"Balochistan's literacy rate is approximately:",
+   o:["35%","42%","51%","57%"],a:1},
+  {q:"Pakistan's actual education budget as a percentage of GDP in 2023 was approximately:",
+   o:["4-6%","3-4%","1.87%","2.5%"],a:2},
+  {q:"The UNESCO/Incheon minimum recommended education budget is:",
+   o:["2-3% of GDP","4-6% of GDP","7-8% of GDP","1-2% of GDP"],a:1},
+  {q:"The famous quote 'The illiterate of the 21st century will not be those who cannot read and write' is attributed to:",
+   o:["Nelson Mandela","Alvin Toffler","Noam Chomsky","Peter Drucker"],a:1},
+  {q:"The key challenges in education highlighted in the lectures include insufficient funding, teacher training gaps, and:",
+   o:["Lack of students","Outdated curriculum","Foreign interference","Language barriers"],a:1},
+  {q:"NEMIS stands for:",
+   o:["New Education Management and Improvement System","National Education Management Information System","National Examination and Marking Information System","New Enrollment and Merit Information System"],a:1},
+  {q:"Pakistan's education quality assurance initiative includes setting up Academic Audit through linkage with:",
+   o:["Foreign funding","Cash awards / incentives","Military supervision","Private companies"],a:1},
+  {q:"All new primary schools are required to have a female teacher proportion of:",
+   o:["50%","60%","70%","80%"],a:2},
+  {q:"All primary schools in Pakistan are being converted to:",
+   o:["Single-sex schools","Co-educational schools","Online schools","Madrasas"],a:1},
+
+  // ── SECTION 11: Terrorism & Extremism ──
+  {s:"⚠️ Terrorism, Extremism & Brain Drain",
+   q:"The three main causes of brain drain highlighted in the lectures are economic instability, lack of opportunities, and:",
+   o:["Natural disasters","Political uncertainty","Religious extremism","Foreign competition"],a:1},
+  {q:"The sectors most affected by brain drain in Pakistan are:",
+   o:["Agriculture and mining","Healthcare and IT","Textiles and manufacturing","Construction and banking"],a:1},
+  {q:"The impact of brain drain on national development includes shortage of skilled workforce, slow technological progress, and:",
+   o:["Improved education","Economic stagnation","Better governance","More remittances"],a:2},
+  {q:"Pakistan's four major contemporary challenges identified in Lecture 13 are:",
+   o:["Poverty, corruption, terrorism and pollution","Education, terrorism, extremism and brain drain","Water, food, energy and health","Democracy, economy, security and environment"],a:1},
+
+  // ── SECTION 12: Ethnicity ──
+  {s:"🌐 Ethnicity & Social Structure of Pakistan",
+   q:"Ethnicity in scholarly discourse is defined as a socially constructed group identity based on shared cultural heritage, common ancestry, and:",
+   o:["Shared economic status","Historical memories","Geographic proximity only","Political ideology"],a:1},
+  {q:"Which theoretical perspective views ethnicity as deeply rooted, fundamental, and biologically 'given'?",
+   o:["Instrumentalism","Constructivism","Primordialism","Modernism"],a:2},
+  {q:"Which theory views ethnicity as a fluid, strategic tool used for political mobilization?",
+   o:["Primordialism","Instrumentalism","Essentialism","Structuralism"],a:1},
+  {q:"Constructivism (Modernism) argues that ethnicity is:",
+   o:["Fixed and biological","Shaped only by religion","Highly fluid, negotiated and shaped by political, economic and social forces","Determined by geography alone"],a:2},
+  {q:"Max Weber defined ethnic groups as those with a subjective belief in their common descent because of similarities of:",
+   o:["Language only","Physical type or customs or memories of colonization and migration","Economic status","Political ideology"],a:1},
+  {q:"The largest ethnic group in Pakistan are the Punjabis, constituting approximately:",
+   o:["25-30%","37-45%","50-55%","15-20%"],a:1},
+  {q:"Punjabis form the backbone of Pakistan's agricultural sector, military, and:",
+   o:["Judiciary","Federal bureaucracy","Media","Sports"],a:1},
+  {q:"Pashtuns are also traditionally known as:",
+   o:["Sindhis","Baltis","Pathans","Hazaras"],a:2},
+  {q:"The strict cultural code followed by Pashtuns is called:",
+   o:["Pashtunwali","Balochistan Code","Jirgah Code","Melmastia Law"],a:0},
+  {q:"Pashtuns are approximately what percentage of Pakistan's population?",
+   o:["5-8%","15-18%","25-28%","30-35%"],a:1},
+  {q:"Sindhis possess a distinct literary tradition tied to the history of the:",
+   o:["Mughal Empire","Ancient Indus Valley Civilization","Persian Empire","Ottoman Empire"],a:1},
+  {q:"The Saraiki population is concentrated primarily in:",
+   o:["Northern Punjab and KPK","South Punjab (Saraiki belt) and parts of KPK","Sindh and Balochistan","Gilgit-Baltistan"],a:1},
+  {q:"Muhajirs are the descendants of Urdu-speaking Muslims who migrated from India during:",
+   o:["The British Raj","The Partition in 1947","World War II","The 1971 war"],a:1},
+  {q:"Muhajirs are primarily concentrated in major urban centers of:",
+   o:["Punjab","Balochistan","KPK","Sindh (especially Karachi and Hyderabad)"],a:3},
+  {q:"The Baloch ethnic group controls Pakistan's largest province by land mass but is the smallest major group by:",
+   o:["Economic output","Land ownership","Population","Political representation"],a:2},
+  {q:"The Brahui people in Balochistan speak a language from which language family?",
+   o:["Indo-Aryan","Iranic","Dravidian","Turkic"],a:2},
+  {q:"The Hazaras in Quetta are structurally distinct and largely belong to which denomination?",
+   o:["Sunni","Shia","Ismaili","Ahmadiyya"],a:1},
+  {q:"The Kalash community in Chitral practices:",
+   o:["Sunni Islam","Christianity","An animist faith","Buddhism"],a:2},
+  {q:"The Biradari system is primarily prevalent in:",
+   o:["Balochistan and KPK","Punjab and parts of Sindh","Northern Areas","Azad Kashmir"],a:1},
+  {q:"In Pakistani social hierarchy, 'Ashraf' refers to:",
+   o:["Low-caste laborers","High-status lineages claiming foreign Arab, Persian or Central Asian descent","Tribal chiefs","Urban merchant class"],a:1},
+  {q:"Pashtun societies operate on the principle of Pashtunwali, which governs honor (Nang), hospitality (Melmastia), and:",
+   o:["Charity (Zakat)","Revenge (Badal)","Prayer (Namaz)","Knowledge (Ilm)"],a:1},
+  {q:"In Sindh and Southern Punjab, social life revolves around the:",
+   o:["Jirga (tribal assembly)","Wadera or Jagirdar (landlord)","Biradari network","Khan or Nawab"],a:1},
+  {q:"A Baloch tribal chief is called a:",
+   o:["Khan","Sardar","Nawab","Chaudhry"],a:1},
+  {q:"A dispute-settling tribal assembly in Pashtun society is called a:",
+   o:["Loya Jirga / Jirga","Biradari meeting","Shura","Majlis"],a:0},
+
+  // ── SECTION 13: Ethnic Issues ──
+  {s:"⚡ Ethnic Issues & Regional Grievances",
+   q:"Baloch nationalists argue that the federal government extracts natural wealth such as natural gas from Sui without giving locals:",
+   o:["Military protection","Their fair financial share","Educational facilities","Infrastructure"],a:1},
+  {q:"The development of which port is viewed by Baloch locals as exploitative under CPEC?",
+   o:["Karachi Port","Port Qasim","Gwadar Port","Ormara Port"],a:2},
+  {q:"PTM stands for:",
+   o:["Pakistan Tribal Movement","Pashtun Tahaffuz Movement","Pashtun Territorial Mission","Punjab Tribal Movement"],a:1},
+  {q:"The PTM demands include clearing of landmines, ending extrajudicial killings, and:",
+   o:["Secession from Pakistan","Accountability for enforced disappearances","A separate Pashtun state","Military autonomy"],a:1},
+  {q:"The 18th Constitutional Amendment aimed to resolve ethnic grievances by:",
+   o:["Increasing military power","Decentralizing administrative and financial powers to provinces","Establishing a new federal capital","Merging provinces"],a:1},
+  {q:"Punjab holds more than half of the seats in the:",
+   o:["Senate","National Assembly","Provincial assemblies combined","Supreme Court"],a:1},
+  {q:"The historical policy of promoting Urdu as the sole national language contributed to which crisis?",
+   o:["The Baloch insurgency","The loss of East Pakistan (Bangladesh) in 1971","The Karachi ethnic violence","The KPK separatist movement"],a:1},
+  {q:"The Provincial Quota System in Sindh reserves government jobs for rural populations, causing Muhajirs to feel:",
+   o:["Privileged","Marginalized","Politically dominant","Economically superior"],a:1},
+
+  // ── SECTION 14: Futuristic Outlook ──
+  {s:"🚀 Futuristic Outlook for Pakistan",
+   q:"Pakistan's 'Pakistan@100' refers to its centenary target year of:",
+   o:["2040","2047","2050","2060"],a:1},
+  {q:"Pakistan's target economy size by 2047 is:",
+   o:["$1 trillion","$2 trillion","$3 trillion","$5 trillion"],a:2},
+  {q:"Pakistan's population is projected to reach approximately how many people by 2047?",
+   o:["280 million","320 million","380 million","450 million"],a:2},
+  {q:"What percentage of Pakistan's population is currently under the age of 30?",
+   o:["40%","50%","60%","70%"],a:2},
+  {q:"Government planners have warned that uncontrolled population expansion without education reform will create a:",
+   o:["Economic boom","Social bomb","Military threat","Environmental crisis"],a:1},
+  {q:"Pakistani youth have built one of the world's largest freelance economies in:",
+   o:["Manufacturing","Agriculture","IT and digital services","Construction"],a:2},
+  {q:"The futuristic focus for upskilling Pakistan's youth bulge includes sectors like AI, software engineering, and:",
+   o:["Agriculture","Blockchain","Military technology","Mining"],a:1},
+  {q:"Mobile banking ecosystems in Pakistan are bringing unbanked citizens into the formal economy through:",
+   o:["Traditional banking branches","Fintech and financial inclusion","Foreign bank partnerships","Government grants"],a:1},
+  {q:"Pakistan's decentralization future depends on deeper implementation of the:",
+   o:["13th Constitutional Amendment","17th Constitutional Amendment","18th Constitutional Amendment","21st Constitutional Amendment"],a:2},
+  {q:"For climate resilience, future infrastructure investments in Pakistan will heavily rely on:",
+   o:["Domestic taxation","International climate financing","Remittances from abroad","Military budget reallocation"],a:1},
+
+  // ── SECTION 15: Industries & Economy ──
+  {s:"🏭 Major Industries of Pakistan",
+   q:"Which of the following is listed as one of Pakistan's major industries?",
+   o:["Aerospace industry","Textile industry","Nuclear industry","Space industry"],a:1},
+  {q:"Pakistan's Surgical industry is renowned and clustered primarily in which city?",
+   o:["Lahore","Karachi","Sialkot","Faisalabad"],a:2},
+  {q:"Pakistan's sports goods industry is also primarily concentrated in:",
+   o:["Lahore","Karachi","Quetta","Sialkot"],a:3},
+  {q:"Pakistan's agriculture sector backbone crop for textile industry is:",
+   o:["Wheat","Rice","Cotton","Sugarcane"],a:2},
+  {q:"Which of the following is the staple food security crop of Pakistan?",
+   o:["Rice","Wheat","Maize","Sugarcane"],a:1},
+  {q:"Pakistan's industrial development is pursued through policies that support:",
+   o:["Nationalization and state control","Privatization and deregulation","Foreign ownership of all industry","Agricultural subsidies only"],a:1},
+  {q:"Industrialization promotes specialized labor, which increases the:",
+   o:["Unemployment rate","Marginal value product of labor","Agricultural output","Military strength"],a:1},
+
+  // ── SECTION 16: Mixed Review ──
+  {s:"🔄 Mixed Review – Key Facts",
+   q:"Pakistan joined the United Nations in 1947 despite opposition from:",
+   o:["India","Iran","Afghanistan","Saudi Arabia"],a:2},
+  {q:"The Durand Line is the disputed border between Pakistan and:",
+   o:["India","Iran","Afghanistan","China"],a:2},
+  {q:"The Reko Diq mine is located in which province?",
+   o:["Punjab","Sindh","KPK","Balochistan"],a:3},
+  {q:"Sui gas field, from which Pakistan extracts natural gas, is located in:",
+   o:["Punjab","Sindh","Balochistan","KPK"],a:2},
+  {q:"The Karakoram Highway connects Pakistan to:",
+   o:["Iran","Afghanistan","China","India"],a:2},
+  {q:"SAARC stands for:",
+   o:["South Asian Alliance for Regional Cooperation","South Asian Association for Regional Cooperation","Southeast Asian Association for Regional Commerce","South Asian Agreement for Regional Commerce"],a:1},
+  {q:"ECO stands for:",
+   o:["Economic Cooperation Organization","Eastern Commercial Organization","Euro-Central Organization","Energy Council Organization"],a:0},
+  {q:"OIC stands for:",
+   o:["Organization of Islamic Countries","Organization of Islamic Commerce","Organization of Islamic Cooperation","Organization of International Commerce"],a:2},
+  {q:"CENTO was formerly known as:",
+   o:["The North Atlantic Treaty","The Baghdad Pact","The SEATO Pact","The Warsaw Pact"],a:1},
+  {q:"Pakistan's most famous nuclear tests in 1998 were conducted at:",
+   o:["Pokhran","Chaghi Hills","Rawalpindi","Khushab"],a:1},
+  {q:"The Soviet-Afghan War began with the Soviet invasion in:",
+   o:["1975","1977","1979","1981"],a:2},
+  {q:"Which Pakistani leader made a ceasefire proposal along the LoC at the UN General Assembly in 2003?",
+   o:["Nawaz Sharif","Benazir Bhutto","Pervez Musharraf","Asif Ali Zardari"],a:2},
+  {q:"During the Shanghai Cooperation Organization summit in India in 2023, which topic led to a diplomatic exchange between India and Pakistan's foreign ministers?",
+   o:["CPEC","Nuclear weapons","Kashmir","Trade"],a:2},
+  {q:"Karachi is home to one of the world's largest urban populations of which ethnic group?",
+   o:["Sindhis","Baloch","Pashtuns","Saraikis"],a:2},
+  {q:"The Indus Valley Civilization is historically associated with which ethnic group in Pakistan?",
+   o:["Pashtuns","Baloch","Sindhis","Punjabis"],a:2},
+  {q:"Pakistan's national language, Urdu, was historically used as a tool to:",
+   o:["Divide provinces","Forge a singular national identity","Promote regional languages","Create separate ethnic states"],a:1},
+  {q:"Charles W. Kegley is quoted in the lectures in the context of defining:",
+   o:["National development","Security","Ethnicity","Industrialization"],a:1},
+  {q:"The Water and Power Development Authority (WAPDA) is related to which sector?",
+   o:["Industrial regulation","Water and energy management","Agricultural exports","Foreign investment"],a:1},
+  {q:"PCRWR stands for:",
+   o:["Pakistan Council of Research in Water Resources","Pakistan Commission for Rural Water Reform","Pakistan Central Research for Water Relations","Pakistan Council of Regional Water Resources"],a:0},
+  {q:"The concept of 'Learn, Unlearn and Relearn' mentioned in Lecture 13 is applied to which challenge?",
+   o:["Terrorism","Economy","Education","Ethnicity"],a:2},
+  {q:"Pakistan's economy's chronic trade deficit is primarily because:",
+   o:["Pakistan has no exports","Imports exceed exports","Pakistan has no industries","Foreign aid has stopped"],a:1},
+  {q:"What is the primary purpose of Gwadar Port in CPEC?",
+   o:["Pakistan's naval base","To provide China access to the Arabian Sea and trade routes","Tourism development","Fishing industry"],a:1},
+  {q:"Which country was the first to officially recognize Pakistan after independence?",
+   o:["USA","Iran","China","Turkey"],a:1},
+  {q:"The 1965 and 1971 wars were fought between Pakistan and:",
+   o:["Afghanistan","Iran","India","The Soviet Union"],a:2},
+  {q:"What percentage of Pakistan's energy is targeted to come from clean renewable sources by 2030?",
+   o:["30%","45%","60%","80%"],a:2},
+  {q:"The futuristic outlook for Pakistan includes transitioning away from imported:",
+   o:["Oil","Gas","Coal","Uranium"],a:2},
+  {q:"The 18th Constitutional Amendment is primarily concerned with:",
+   o:["Military powers","Decentralization of powers to provinces","Foreign policy","Judicial reform"],a:1},
+  {q:"Which of the following best describes Pakistan's social structure?",
+   o:["Purely individualistic","Highly collectivist, prioritizing family and community","Purely urban","Strictly egalitarian"],a:1},
+  {q:"The Ashraf social group in Pakistan typically claims descent from:",
+   o:["Indigenous South Asian tribes","Arab, Persian or Central Asian ancestors","British colonial officials","Mongol warriors"],a:1},
+  {q:"FATA was merged into which province?",
+   o:["Punjab","Sindh","Balochistan","Khyber Pakhtunkhwa"],a:3},
+  {q:"Pakistan's census data typically uses which factor as a proxy for ethnicity?",
+   o:["Religion","Mother tongue","Province of origin","Occupation"],a:1},
+  {q:"The RCD (Regional Cooperation for Development) included Pakistan, Iran and:",
+   o:["Afghanistan","India","Turkey","Saudi Arabia"],a:2},
+  {q:"Which of the following best describes the Quaternary sector of industry?",
+   o:["Agriculture and raw material extraction","Manufacturing of goods","Service and retail","Information technology, research and education"],a:3},
+  {q:"Pakistan's freelance IT economy emerged primarily because of:",
+   o:["Government policy","Lack of traditional domestic jobs","Foreign investment","Military training programs"],a:1},
+  {q:"The catastrophic floods of recent years in Pakistan have forced a paradigm shift in:",
+   o:["Military strategy","Urban planning and infrastructure investment","Foreign policy","Agricultural subsidies"],a:1},
+];
+
+// ── State ──
+let answered = {};
+let submitted = false;
+let timerInterval;
+let seconds = 0;
+let warnShown = false;
+
+function formatTime(s) {
+  const m = Math.floor(s/60).toString().padStart(2,'0');
+  const ss = (s%60).toString().padStart(2,'0');
+  return `${m}:${ss}`;
+}
+
+function startTimer() {
+  timerInterval = setInterval(()=>{
+    seconds++;
+    document.getElementById('timerDisplay').textContent = formatTime(seconds);
+  }, 1000);
+}
+
+function buildQuiz() {
+  const container = document.getElementById('questionsContainer');
+  container.innerHTML = '';
+  let currentSection = '';
+  let qNum = 0;
+
+  ALL_QUESTIONS.forEach((q, idx) => {
+    if (q.s && q.s !== currentSection) {
+      currentSection = q.s;
+      const sec = document.createElement('div');
+      sec.className = 'section-title';
+      sec.textContent = currentSection;
+      container.appendChild(sec);
+    }
+    qNum++;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `card-${idx}`;
+
+    const optionsHTML = q.o.map((opt, oi) => `
+      <label class="opt-label" id="lbl-${idx}-${oi}">
+        <input type="radio" name="q${idx}" value="${oi}" onchange="onAnswer(${idx},${oi})">
+        <div class="opt-dot"></div>
+        <span>${String.fromCharCode(65+oi)}. ${opt}</span>
+      </label>
+    `).join('');
+
+    card.innerHTML = `
+      <div class="q-num">Question ${qNum} of ${ALL_QUESTIONS.length}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">${optionsHTML}</div>
+      <div class="answer-hint" id="hint-${idx}"></div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function onAnswer(qIdx, optIdx) {
+  answered[qIdx] = optIdx;
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = ALL_QUESTIONS.length;
+  const done = Object.keys(answered).length;
+  const pct = Math.round((done/total)*100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `${done} / ${total} answered`;
+}
+
+function handleSubmit() {
+  const unanswered = ALL_QUESTIONS.length - Object.keys(answered).length;
+  if (!submitted && unanswered > 0 && !warnShown) {
+    warnShown = true;
+    const warn = document.getElementById('warnMsg');
+    warn.style.display = 'block';
+    warn.textContent = `⚠️ ${unanswered} question(s) unanswered. Click Submit again to confirm.`;
+    return;
+  }
+  submitQuiz();
+}
+
+function submitQuiz() {
+  submitted = true;
+  clearInterval(timerInterval);
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('submitBtn').textContent = '✓ Submitted';
+  document.getElementById('warnMsg').style.display = 'none';
+
+  let correct = 0, wrong = 0, skipped = 0;
+
+  ALL_QUESTIONS.forEach((q, idx) => {
+    const card = document.getElementById(`card-${idx}`);
+    const userAns = answered[idx];
+
+    if (userAns === undefined) {
+      skipped++;
+      // Show correct answer in green
+      const correctLbl = document.getElementById(`lbl-${idx}-${q.a}`);
+      if(correctLbl) correctLbl.classList.add('correct-opt');
+      card.classList.add('answered-wrong');
+    } else if (userAns === q.a) {
+      correct++;
+      card.classList.add('answered-correct');
+      const correctLbl = document.getElementById(`lbl-${idx}-${q.a}`);
+      if(correctLbl) correctLbl.classList.add('correct-opt');
+    } else {
+      wrong++;
+      card.classList.add('answered-wrong');
+      const wrongLbl = document.getElementById(`lbl-${idx}-${userAns}`);
+      if(wrongLbl) wrongLbl.classList.add('wrong-opt');
+      const correctLbl = document.getElementById(`lbl-${idx}-${q.a}`);
+      if(correctLbl) correctLbl.classList.add('correct-opt');
+      const hint = document.getElementById(`hint-${idx}`);
+      hint.textContent = `✓ Correct answer: ${String.fromCharCode(65+q.a)}. ${q.o[q.a]}`;
+      hint.classList.add('show');
+    }
+
+    // Disable all inputs
+    const inputs = card.querySelectorAll('input[type="radio"]');
+    inputs.forEach(inp => inp.disabled = true);
+  });
+
+  const total = ALL_QUESTIONS.length;
+  const pct = Math.round((correct / total) * 100);
+  const passed = pct >= PASS_PERCENT;
+
+  // Show results panel
+  const panel = document.getElementById('resultPanel');
+  panel.style.display = 'block';
+  document.getElementById('resultEmoji').textContent = passed ? '🎉' : '📖';
+  const title = document.getElementById('resultTitle');
+  title.textContent = passed ? 'Congratulations! You Passed!' : 'Keep Studying – You Can Do It!';
+  title.className = 'result-title ' + (passed ? 'result-pass' : 'result-fail');
+  document.getElementById('statCorrect').textContent = correct;
+  document.getElementById('statWrong').textContent = wrong;
+  document.getElementById('statSkipped').textContent = skipped;
+  document.getElementById('statPct').textContent = pct + '%';
+
+  const bar = document.getElementById('passBar');
+  bar.className = 'pass-bar ' + (passed ? 'pass-color' : 'fail-color');
+  setTimeout(()=>{ bar.style.width = pct + '%'; }, 100);
+
+  // Scroll to result
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Update progress to 100%
+  document.getElementById('progressBar').style.width = '100%';
+  document.getElementById('progressLabel').textContent = `Quiz complete! Score: ${pct}% | Time: ${formatTime(seconds)}`;
+}
+
+function restart() {
+  answered = {};
+  submitted = false;
+  warnShown = false;
+  seconds = 0;
+  document.getElementById('resultPanel').style.display = 'none';
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('submitBtn').textContent = 'Submit Answers';
+  buildQuiz();
+  updateProgress();
+  startTimer();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Scroll to top button
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('scrollTop');
+  if(window.scrollY > 400) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+});
+
+// Init
+buildQuiz();
+updateProgress();
+startTimer();
+</script>
+</body>
+</html>
